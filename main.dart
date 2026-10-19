@@ -5,7 +5,7 @@ enum RequestStatus { pending, inProgress, resolved }
 class ServiceRequest {
   final int id;
   final String studentName;
-  final String studentId; // Added to store the student's ID number
+  final int studentId; // Changed to int to strictly enforce numbers only
   final String category;
   final String description;
   RequestStatus status;
@@ -24,14 +24,14 @@ final List<ServiceRequest> requests = [
   ServiceRequest(
     id: 1001,
     studentName: 'Student Demo',
-    studentId: 'CB26001',
+    studentId: 202601,
     category: 'IT Support',
     description: 'Cannot connect to the campus Wi-Fi.',
   ),
   ServiceRequest(
     id: 1002,
     studentName: 'Student Demo',
-    studentId: 'CB26002',
+    studentId: 202602,
     category: 'Maintenance',
     description: 'Classroom projector is not working.',
     status: RequestStatus.inProgress,
@@ -63,7 +63,16 @@ String statusText(RequestStatus status) {
 void submitRequest() {
   print('\n--- SUBMIT SERVICE REQUEST ---');
   final name = readRequired('Student name: ');
-  final stuId = readRequired('Student ID number: '); // New authentication step
+  
+  // Strict numeric validation for Student ID
+  int? stuId;
+  while (stuId == null) {
+    final idInput = readRequired('Student ID number (numbers only): ');
+    stuId = int.tryParse(idInput);
+    if (stuId == null) {
+      print('Invalid Student ID. Please enter numbers only, no letters.');
+    }
+  }
   
   // Numbered option selection for categories
   print('\nSelect Category:');
@@ -120,7 +129,7 @@ void listRequests() {
   }
   for (final r in requests) {
     print(
-      '#${r.id} | ${r.studentName} (${r.studentId}) | ${r.category} | '
+      '#${r.id} | ${r.studentName} (ID: ${r.studentId}) | ${r.category} | '
       '${statusText(r.status)}',
     );
     print('   ${r.description}');
